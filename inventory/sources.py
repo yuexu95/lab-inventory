@@ -9,6 +9,7 @@ Both readers return {tab_title: rows}; each row is a list of raw cell values
 import datetime
 import json
 import re
+import sys
 
 
 def read_xlsx(path):
@@ -22,9 +23,19 @@ def read_google(sheet_id, creds_json):
     import gspread
     from google.oauth2.service_account import Credentials
 
+    try:
+        info = json.loads(creds_json)
+    except json.JSONDecodeError as e:
+        # The first few characters of a key file are boilerplate, so they are
+        # safe to show and usually explain a bad paste into the secret.
+        head = creds_json.lstrip()[:16]
+        sys.exit(
+            f"GOOGLE_SERVICE_ACCOUNT_JSON is not valid JSON ({e.msg} at char {e.pos}). "
+            f"It starts with {head!r} and is {len(creds_json)} characters long; the value "
+            "must be the whole key file, from the opening '{' to the closing '}'."
+        )
     creds = Credentials.from_service_account_info(
-        json.loads(creds_json),
-        scopes=["https://www.googleapis.com/auth/spreadsheets.readonly"],
+        info, scopes=["https://www.googleapis.com/auth/spreadsheets.readonly"]
     )
     book = gspread.authorize(creds).open_by_key(sheet_id)
     return {ws.title: ws.get_all_values() for ws in book.worksheets()}
