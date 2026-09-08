@@ -37,9 +37,11 @@ sheet avoids the problem at the source. The old one-tab-per-box workbook
 
 **Cell lines** recognises `Program`, `Cell Line`, `ATCC Cat. No.`,
 `Organism / Background`, `Tissue / Disease`, `Key Feature or Marker`,
-`Recommended Base Medium`, `Role in Project` and `Qty`. Rows without a cell
-line name (subtotals, spacers) are skipped. The ATCC link is built from the
-catalogue number. Price columns are ignored on purpose.
+`Recommended Base Medium`, `Role in Project` and `Qty`. A second `Locations`
+column in the form `Box A: A3, H8 | Box B: A4` is parsed into freezer
+coordinates and powers the [freezer map](site/cells/freezer-map/index.html).
+Rows without a cell line name (subtotals, spacers) are skipped. The ATCC link
+is built from the catalogue number. Price columns are ignored on purpose.
 
 ## Build locally
 

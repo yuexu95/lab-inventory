@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Freezer map · Cell lines · Lab Inventory</title>
+<link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+
+<nav class="topnav">
+  <a class="brand" href="../../">Lab Inventory</a>
+  <a href="../../chemicals/">Building blocks</a>
+  <a href="../">Cell lines</a>
+  <a class="here" href="./">Freezer map</a>
+  <a href="../../antibody/">Antibody</a>
+  <a href="../../dna-plasmids/">DNA plasmids</a>
+</nav>
+
+<header>
+  <div class="titles">
+    <h1>Freezer map</h1>
+    <p>Find a cell line by name, or click a filled slot to see where it is stored.</p>
+  </div>
+  <div class="tally" id="tally"></div>
+</header>
+
+<div class="freezer-layout">
+  <aside class="freezer-sidebar">
+    <input id="q" type="search" placeholder="Search a cell line" autocomplete="off">
+    <p class="freezer-hint">Click a name to highlight every slot it occupies.</p>
+    <ul id="lineList"></ul>
+  </aside>
+  <main class="freezer-main" id="boxes">
+    <p class="status" id="status">Loading freezer map…</p>
+  </main>
+</div>
+
+<div class="freezer-tip" id="tip" role="status" aria-live="polite"></div>
+<script src="app.js"></script>
+</body>
+</html>

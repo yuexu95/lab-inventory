@@ -20,11 +20,23 @@ BLURB = (
 )
 SHEET_ID = "1Ezga1klNnOzxdRa-8rgWEQhAqDztvxok_qHcyuqu0MY"
 
-FIELDS = ["program", "name", "catalog", "organism", "tissue", "marker", "medium", "role", "qty"]
+FIELDS = [
+    "program",
+    "name",
+    "location",
+    "catalog",
+    "organism",
+    "tissue",
+    "marker",
+    "medium",
+    "role",
+    "qty",
+]
 
 # header_key() of a header cell -> record field.
 HEADER_FIELDS = {
     "program": "program",
+    "locations": "location",
     "cellline": "name",
     "line": "name",
     "name": "name",
@@ -53,6 +65,8 @@ HEADER_FIELDS = {
 }
 
 ATCC_URL = "https://www.atcc.org/products/{}"
+LOCATION_RE = re.compile(r"^Box\s+([A-D])\s*:\s*(.+)$", re.IGNORECASE)
+CELL_RE = re.compile(r"^([A-P])\s*(\d+)$", re.IGNORECASE)
 
 
 def species(organism):
@@ -68,6 +82,22 @@ def program_key(rec):
     return (int(m[1]) if m else 99, rec["program"])
 
 
+def parse_locations(value):
+    locations = []
+    for chunk in value.split("|"):
+        match = LOCATION_RE.match(chunk.strip())
+        if not match:
+            continue
+        box, cells = match.groups()
+        for raw_cell in cells.split(","):
+            cell = CELL_RE.match(raw_cell.strip())
+            if not cell:
+                continue
+            row, col = cell.groups()
+            locations.append({"box": f"Box {box.upper()}", "row": row.upper(), "col": int(col)})
+    return locations
+
+
 def load(tabs):
     out = []
     for title, rows in tabs.items():
@@ -75,10 +105,22 @@ def load(tabs):
         if idx is None:
             print(f"  ! no cell-line header, skipping tab: {title}", file=sys.stderr)
             continue
+        # The sheet has two "Locations" columns; the second one contains
+        # freezer coordinates while the first one is the program location.
+        for header_row in rows[:10]:
+            location_columns = [
+                col for col, cell in enumerate(header_row) if clean(cell).lower() == "locations"
+            ]
+            if len(location_columns) > 1:
+                if "program" not in idx:
+                    idx["program"] = location_columns[0]
+                idx["location"] = location_columns[-1]
+                break
         for raw in pick_columns(data, idx, FIELDS):
             rec = {f: clean(raw[f]) for f in FIELDS}
             if not rec["name"]:
                 continue  # subtotal and spacer rows
+            rec["locations"] = parse_locations(rec.pop("location"))
             rec["species"] = species(rec["organism"])
             rec["url"] = ATCC_URL.format(rec["catalog"].lower()) if rec["catalog"] else ""
             out.append(rec)
