@@ -7,6 +7,7 @@ const el = {
   total: document.getElementById('total'),
   query: document.getElementById('q'),
   programChips: document.getElementById('programChips'),
+  speciesChips: document.getElementById('speciesChips'),
   overlay: document.getElementById('overlay'),
   modal: document.getElementById('modal'),
 };
@@ -14,11 +15,13 @@ const el = {
 const state = {
   records: [],
   program: 'All',
+  species: 'All',
   query: '',
 };
 
 function matches(rec) {
   if (state.program !== 'All' && rec.program !== state.program) return false;
+  if (state.species !== 'All' && rec.species !== state.species) return false;
   if (!state.query) return true;
   const hay = [rec.name, rec.catalog, rec.organism, rec.tissue, rec.marker, rec.program, rec.role]
     .join(' ').toLowerCase();
@@ -91,8 +94,7 @@ function render() {
     { name: 'No freezer location', rows: rows.filter((rec) => !(rec.locations || []).length) },
   ];
   for (const group of groups) {
-    const boxRows = group.rows;
-    if (!boxRows.length) continue;
+    if (!group.rows.length) continue;
     const section = document.createElement('section');
     section.className = 'cell-group';
     const heading = document.createElement('h2');
@@ -100,7 +102,9 @@ function render() {
     section.appendChild(heading);
     const grid = document.createElement('div');
     grid.className = 'grid';
-    for (const rec of boxRows) grid.appendChild(cardFor(rec, group.name === 'No freezer location' ? '' : group.name));
+    for (const rec of group.rows) {
+      grid.appendChild(cardFor(rec, group.name === 'No freezer location' ? '' : group.name));
+    }
     section.appendChild(grid);
     frag.appendChild(section);
   }
@@ -206,6 +210,13 @@ function refreshChips(data) {
     tally('program'),
     (v) => state.program === v,
     (v) => { state.program = v; refreshChips(data); render(); }
+  );
+  buildChips(
+    el.speciesChips,
+    ['All', ...data.species],
+    tally('species'),
+    (v) => state.species === v,
+    (v) => { state.species = v; refreshChips(data); render(); }
   );
 }
 
