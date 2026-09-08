@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Building Block Library</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="titles">
+    <h1>Building Block Library</h1>
+    <p>Reagent stock for ionizable-lipid synthesis, boxed by scale. Structures drawn from SMILES with RDKit at build time.</p>
+  </div>
+  <div class="tally">showing<strong id="tally">—</strong><span id="total"></span></div>
+</header>
+
+<div class="toolbar">
+  <input id="q" type="search" placeholder="search name, CAS, catalog no., vendor, position…" autocomplete="off">
+  <div class="chips" id="boxChips" aria-label="Filter by box"></div>
+</div>
+
+<div class="groupbar">
+  <span class="groupbar-label">functional group</span>
+  <div class="chips" id="groupChips" aria-label="Filter by functional group"></div>
+</div>
+
+<main>
+  <p class="status" id="status">Loading inventory…</p>
+  <div class="grid" id="grid"></div>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
