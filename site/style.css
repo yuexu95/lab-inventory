@@ -21,6 +21,31 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 
+/* ---- top nav ---- */
+
+.topnav{
+  display:flex;
+  gap:20px;
+  align-items:baseline;
+  padding:12px 28px;
+  border-bottom:1px solid var(--line);
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.topnav a{color:var(--soft);text-decoration:none}
+.topnav a:hover{color:var(--ink)}
+.topnav a.here{color:var(--ink);font-weight:600}
+.topnav .brand{
+  font-family:var(--serif);
+  font-size:13.5px;
+  letter-spacing:0;
+  text-transform:none;
+  color:var(--ink);
+  margin-right:8px;
+}
+
 /* ---- header ---- */
 
 header{
@@ -195,6 +220,61 @@ main{padding:24px 28px 60px}
 }
 .card .meta .flag{color:var(--amber);font-weight:600}
 
+/* cards without a structure frame (cell lines) */
+.card.cell .name{margin-top:5px}
+.card .sub{
+  font-size:12px;
+  line-height:1.4;
+  color:var(--soft);
+  margin-bottom:3px;
+}
+.card .marker{
+  margin:6px 0 8px;
+  font-family:var(--mono);
+  font-size:10.5px;
+  line-height:1.45;
+  color:var(--teal);
+}
+
+/* ---- landing page ---- */
+
+.sections{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:15px;
+}
+.section-card{
+  display:block;
+  background:var(--raised);
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:20px 20px 18px;
+  color:inherit;
+  text-decoration:none;
+  transition:border-color .12s ease;
+}
+.section-card:hover{border-color:var(--teal)}
+.section-card:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.section-card h2{margin:0 0 8px;font-size:19px;font-weight:600}
+.section-card .count{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--soft);
+  margin-bottom:10px;
+}
+.section-card .count strong{
+  font-size:26px;
+  font-weight:600;
+  color:var(--ink);
+  margin-right:7px;
+}
+.section-card p{
+  margin:0;
+  color:var(--soft);
+  font-size:13.5px;
+  line-height:1.5;
+}
+
 /* ---- modal ---- */
 
 .overlay{
@@ -318,8 +398,21 @@ main{padding:24px 28px 60px}
   line-height:1.5;
   color:var(--amber);
 }
+.details .note{grid-column:1/-1}
+.details .note span{
+  display:block;
+  font-family:var(--serif);
+  font-size:13px;
+  line-height:1.55;
+}
+.modal .link{
+  margin:0 21px 14px;
+  font-family:var(--mono);
+  font-size:11.5px;
+}
+.modal .link a{color:var(--teal)}
 
 @media (max-width:620px){
-  header,.toolbar,.groupbar,main{padding-left:16px;padding-right:16px}
+  .topnav,header,.toolbar,.groupbar,main{padding-left:16px;padding-right:16px}
   .details{grid-template-columns:1fr}
 }

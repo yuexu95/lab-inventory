@@ -3,38 +3,67 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Building Block Library</title>
+<title>Lab Inventory</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<nav class="topnav">
+  <a class="brand here" href="./">Lab Inventory</a>
+  <a href="chemicals/">Building blocks</a>
+  <a href="cells/">Cell lines</a>
+</nav>
+
 <header>
   <div class="titles">
-    <h1>Building Block Library</h1>
-    <p>Reagent stock for ionizable-lipid synthesis, boxed by scale. Structures drawn from SMILES with RDKit at build time.</p>
+    <h1>Lab Inventory</h1>
+    <p>What is on the shelves and in the freezer. Rebuilt from the lab's Google Sheets every night, so edit the sheet and this follows.</p>
   </div>
-  <div class="tally">showing<strong id="tally">—</strong><span id="total"></span></div>
+  <div class="tally" id="built"></div>
 </header>
 
-<div class="toolbar">
-  <input id="q" type="search" placeholder="search name, CAS, catalog no., vendor, position…" autocomplete="off">
-  <div class="chips" id="boxChips" aria-label="Filter by box"></div>
-</div>
-
-<div class="groupbar">
-  <span class="groupbar-label">functional group</span>
-  <div class="chips" id="groupChips" aria-label="Filter by functional group"></div>
-</div>
-
 <main>
-  <p class="status" id="status">Loading inventory…</p>
-  <div class="grid" id="grid"></div>
+  <p class="status" id="status">Loading…</p>
+  <div class="sections" id="sections"></div>
 </main>
 
-<div class="overlay" id="overlay">
-  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"></div>
-</div>
+<script>
+'use strict';
 
-<script src="app.js"></script>
+function line(tag, className, text) {
+  const node = document.createElement(tag);
+  node.className = className;
+  node.textContent = text;
+  return node;
+}
+
+fetch('summary.json')
+  .then((r) => {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  })
+  .then((data) => {
+    document.getElementById('built').textContent = 'rebuilt ' + data.built;
+    const wrap = document.getElementById('sections');
+    for (const s of data.sections) {
+      const card = document.createElement('a');
+      card.className = 'section-card';
+      card.href = s.slug + '/';
+      card.appendChild(line('h2', '', s.title));
+      const count = line('div', 'count', '');
+      count.appendChild(line('strong', '', s.count));
+      count.appendChild(document.createTextNode(s.unit));
+      card.appendChild(count);
+      card.appendChild(line('p', '', s.blurb));
+      wrap.appendChild(card);
+    }
+    document.getElementById('status').hidden = true;
+  })
+  .catch((err) => {
+    const status = document.getElementById('status');
+    status.hidden = false;
+    status.textContent = 'Could not load the inventory summary: ' + err.message;
+  });
+</script>
 </body>
 </html>
