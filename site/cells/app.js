@@ -7,7 +7,6 @@ const el = {
   total: document.getElementById('total'),
   query: document.getElementById('q'),
   programChips: document.getElementById('programChips'),
-  speciesChips: document.getElementById('speciesChips'),
   overlay: document.getElementById('overlay'),
   modal: document.getElementById('modal'),
 };
@@ -15,13 +14,11 @@ const el = {
 const state = {
   records: [],
   program: 'All',
-  species: 'All',
   query: '',
 };
 
 function matches(rec) {
   if (state.program !== 'All' && rec.program !== state.program) return false;
-  if (state.species !== 'All' && rec.species !== state.species) return false;
   if (!state.query) return true;
   const hay = [rec.name, rec.catalog, rec.organism, rec.tissue, rec.marker, rec.program, rec.role]
     .join(' ').toLowerCase();
@@ -40,6 +37,39 @@ function vials(rec) {
   return rec.qty + (rec.qty === '1' ? ' vial' : ' vials');
 }
 
+function locationsFor(rec, box) {
+  return (rec.locations || [])
+    .filter((location) => location.box === box)
+    .map((location) => `${location.row}${location.col}`)
+    .join(', ');
+}
+
+function cardFor(rec, box) {
+  const card = document.createElement('div');
+  card.className = 'card cell';
+  card.tabIndex = 0;
+  card.addEventListener('click', () => openModal(rec));
+  card.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(rec); }
+  });
+
+  card.appendChild(line('pos', box ? locationsFor(rec, box) : rec.catalog));
+  card.appendChild(line('name', rec.name));
+  card.appendChild(line('sub', rec.organism));
+  card.appendChild(line('sub', rec.tissue));
+  if (rec.marker) card.appendChild(line('marker', rec.marker));
+
+  const meta = document.createElement('div');
+  meta.className = 'meta';
+  const species = document.createElement('span');
+  species.textContent = rec.species || '—';
+  const qty = document.createElement('span');
+  qty.textContent = vials(rec);
+  meta.append(species, qty);
+  card.appendChild(meta);
+  return card;
+}
+
 function render() {
   const rows = state.records.filter(matches);
   el.tally.textContent = rows.length;
@@ -53,31 +83,26 @@ function render() {
   el.status.hidden = true;
 
   const frag = document.createDocumentFragment();
-  for (const rec of rows) {
-    const card = document.createElement('div');
-    card.className = 'card cell';
-    card.tabIndex = 0;
-    card.addEventListener('click', () => openModal(rec));
-    card.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(rec); }
-    });
-
-    card.appendChild(line('pos', rec.catalog));
-    card.appendChild(line('name', rec.name));
-    card.appendChild(line('sub', rec.organism));
-    card.appendChild(line('sub', rec.tissue));
-    if (rec.marker) card.appendChild(line('marker', rec.marker));
-
-    const meta = document.createElement('div');
-    meta.className = 'meta';
-    const species = document.createElement('span');
-    species.textContent = rec.species || '—';
-    const qty = document.createElement('span');
-    qty.textContent = vials(rec);
-    meta.append(species, qty);
-    card.appendChild(meta);
-
-    frag.appendChild(card);
+  const groups = [
+    ...['Box A', 'Box B', 'Box C', 'Box D'].map((box) => ({
+      name: box,
+      rows: rows.filter((rec) => (rec.locations || []).some((location) => location.box === box)),
+    })),
+    { name: 'No freezer location', rows: rows.filter((rec) => !(rec.locations || []).length) },
+  ];
+  for (const group of groups) {
+    const boxRows = group.rows;
+    if (!boxRows.length) continue;
+    const section = document.createElement('section');
+    section.className = 'cell-group';
+    const heading = document.createElement('h2');
+    heading.textContent = group.name;
+    section.appendChild(heading);
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+    for (const rec of boxRows) grid.appendChild(cardFor(rec, group.name === 'No freezer location' ? '' : group.name));
+    section.appendChild(grid);
+    frag.appendChild(section);
   }
   el.grid.appendChild(frag);
 }
@@ -181,13 +206,6 @@ function refreshChips(data) {
     tally('program'),
     (v) => state.program === v,
     (v) => { state.program = v; refreshChips(data); render(); }
-  );
-  buildChips(
-    el.speciesChips,
-    ['All', ...data.species],
-    tally('species'),
-    (v) => state.species === v,
-    (v) => { state.species = v; refreshChips(data); render(); }
   );
 }
 

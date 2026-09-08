@@ -164,6 +164,18 @@ main{padding:24px 28px 60px}
   gap:15px;
 }
 
+.cell-group{margin-bottom:28px}
+.cell-group:last-child{margin-bottom:0}
+.cell-group h2{
+  margin:0 0 11px;
+  padding-bottom:7px;
+  border-bottom:1px solid var(--line);
+  font-family:var(--mono);
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:.04em;
+}
+
 .card{
   background:var(--raised);
   border:1px solid var(--line);
