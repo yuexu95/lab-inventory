@@ -83,12 +83,9 @@ function render() {
   el.status.hidden = true;
 
   const frag = document.createDocumentFragment();
-  const grid = document.createElement('div');
-  grid.className = 'grid';
   for (const rec of rows) {
-    grid.appendChild(cardFor(rec));
+    frag.appendChild(cardFor(rec));
   }
-  frag.appendChild(grid);
   el.grid.appendChild(frag);
 }
 
