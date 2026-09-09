@@ -22,11 +22,16 @@
     <h1>Freezer map</h1>
     <p>Find a cell line by name, or click a filled slot to see where it is stored.</p>
   </div>
-  <div class="tally" id="tally"></div>
+  <div class="freezer-header-tools">
+    <button class="freezer-search-toggle" id="searchToggle" type="button" aria-label="Show cell line search" title="Show cell line search" aria-expanded="false" aria-controls="freezerSidebar">
+      <span aria-hidden="true">⌕</span>
+    </button>
+    <div class="tally" id="tally"></div>
+  </div>
 </header>
 
 <div class="freezer-layout">
-  <aside class="freezer-sidebar">
+  <aside class="freezer-sidebar" id="freezerSidebar" hidden>
     <input id="q" type="search" placeholder="Search a cell line" autocomplete="off">
     <p class="freezer-hint">Click a name to highlight every slot it occupies.</p>
     <ul id="lineList"></ul>

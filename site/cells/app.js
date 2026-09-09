@@ -8,6 +8,7 @@ const el = {
   query: document.getElementById('q'),
   programChips: document.getElementById('programChips'),
   speciesChips: document.getElementById('speciesChips'),
+  boxChips: document.getElementById('boxChips'),
   overlay: document.getElementById('overlay'),
   modal: document.getElementById('modal'),
 };
@@ -16,12 +17,14 @@ const state = {
   records: [],
   program: 'All',
   species: 'All',
+  box: 'All',
   query: '',
 };
 
 function matches(rec) {
   if (state.program !== 'All' && rec.program !== state.program) return false;
   if (state.species !== 'All' && rec.species !== state.species) return false;
+  if (state.box !== 'All' && !(rec.locations || []).some((location) => location.box === state.box)) return false;
   if (!state.query) return true;
   const hay = [rec.name, rec.catalog, rec.organism, rec.tissue, rec.marker, rec.program, rec.role]
     .join(' ').toLowerCase();
@@ -40,14 +43,7 @@ function vials(rec) {
   return rec.qty + (rec.qty === '1' ? ' vial' : ' vials');
 }
 
-function locationsFor(rec, box) {
-  return (rec.locations || [])
-    .filter((location) => location.box === box)
-    .map((location) => `${location.row}${location.col}`)
-    .join(', ');
-}
-
-function cardFor(rec, box) {
+function cardFor(rec) {
   const card = document.createElement('div');
   card.className = 'card cell';
   card.tabIndex = 0;
@@ -56,11 +52,12 @@ function cardFor(rec, box) {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(rec); }
   });
 
-  card.appendChild(line('pos', box ? locationsFor(rec, box) : rec.catalog));
+  card.appendChild(line('pos', rec.catalog));
   card.appendChild(line('name', rec.name));
   card.appendChild(line('sub', rec.organism));
   card.appendChild(line('sub', rec.tissue));
   if (rec.marker) card.appendChild(line('marker', rec.marker));
+  if (rec.medium) card.appendChild(line('medium', rec.medium));
 
   const meta = document.createElement('div');
   meta.className = 'meta';
@@ -86,28 +83,12 @@ function render() {
   el.status.hidden = true;
 
   const frag = document.createDocumentFragment();
-  const groups = [
-    ...['Box A', 'Box B', 'Box C', 'Box D'].map((box) => ({
-      name: box,
-      rows: rows.filter((rec) => (rec.locations || []).some((location) => location.box === box)),
-    })),
-    { name: 'No freezer location', rows: rows.filter((rec) => !(rec.locations || []).length) },
-  ];
-  for (const group of groups) {
-    if (!group.rows.length) continue;
-    const section = document.createElement('section');
-    section.className = 'cell-group';
-    const heading = document.createElement('h2');
-    heading.textContent = group.name;
-    section.appendChild(heading);
-    const grid = document.createElement('div');
-    grid.className = 'grid';
-    for (const rec of group.rows) {
-      grid.appendChild(cardFor(rec, group.name === 'No freezer location' ? '' : group.name));
-    }
-    section.appendChild(grid);
-    frag.appendChild(section);
+  const grid = document.createElement('div');
+  grid.className = 'grid';
+  for (const rec of rows) {
+    grid.appendChild(cardFor(rec));
   }
+  frag.appendChild(grid);
   el.grid.appendChild(frag);
 }
 
@@ -151,6 +132,7 @@ function openModal(rec) {
   const fields = [
     ['Program', rec.program || '—', ''],
     ['Species', rec.species || '—', ''],
+    ['Freezer location', (rec.locations || []).map((location) => `${location.box}: ${location.row}${location.col}`).join(', ') || '—', 'wide'],
     ['Tissue / disease', rec.tissue || '—', ''],
     ['Marker', rec.marker || '—', ''],
     ['Quantity', vials(rec), ''],
@@ -218,6 +200,24 @@ function refreshChips(data) {
     (v) => state.species === v,
     (v) => { state.species = v; refreshChips(data); render(); }
   );
+  buildChips(
+    el.boxChips,
+    ['All', ...(data.boxes || [...new Set(state.records.flatMap((rec) => (rec.locations || []).map((location) => location.box)))])],
+    tallyBoxes(),
+    (v) => state.box === v,
+    (v) => { state.box = v; refreshChips(data); render(); }
+  );
+}
+
+function tallyBoxes() {
+  const counts = new Map();
+  for (const rec of state.records) {
+    for (const box of new Set((rec.locations || []).map((location) => location.box))) {
+      counts.set(box, (counts.get(box) || 0) + 1);
+    }
+  }
+  counts.set('All', state.records.length);
+  return counts;
 }
 
 el.query.addEventListener('input', (e) => {

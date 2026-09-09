@@ -11,6 +11,8 @@ const el = {
   boxes: document.getElementById('boxes'),
   list: document.getElementById('lineList'),
   query: document.getElementById('q'),
+  searchToggle: document.getElementById('searchToggle'),
+  sidebar: document.getElementById('freezerSidebar'),
   status: document.getElementById('status'),
   tally: document.getElementById('tally'),
   tip: document.getElementById('tip'),
@@ -19,6 +21,14 @@ const el = {
 let records = [];
 let occupied = new Map();
 let picked = null;
+
+function setSearchOpen(open) {
+  el.sidebar.hidden = !open;
+  el.searchToggle.setAttribute('aria-expanded', String(open));
+  el.searchToggle.setAttribute('aria-label', open ? 'Hide cell line search' : 'Show cell line search');
+  el.searchToggle.title = open ? 'Hide cell line search' : 'Show cell line search';
+  if (open) el.query.focus();
+}
 
 function key(location) {
   return `${location.box}|${location.row}${location.col}`;
@@ -127,6 +137,10 @@ el.list.addEventListener('click', (event) => {
   if (!button) return;
   if (button.dataset.line === picked) clearHighlight();
   else highlight(button.dataset.line);
+});
+
+el.searchToggle.addEventListener('click', () => {
+  setSearchOpen(el.sidebar.hidden);
 });
 
 el.boxes.addEventListener('click', (event) => {

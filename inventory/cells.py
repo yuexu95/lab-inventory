@@ -141,6 +141,7 @@ def build(tabs, out_dir):
         "records": records,
         "programs": programs,
         "species": sorted({r["species"] for r in records if r["species"]}),
+        "boxes": sorted({location["box"] for r in records for location in r["locations"]}),
     }
     (out_dir / "data.json").write_text(
         json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8"

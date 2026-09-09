@@ -247,6 +247,15 @@ main{padding:24px 28px 60px}
   line-height:1.45;
   color:var(--teal);
 }
+.card .medium{
+  margin:5px 0 8px;
+  padding-top:6px;
+  border-top:1px solid var(--line);
+  font-family:var(--mono);
+  font-size:10.5px;
+  line-height:1.45;
+  color:var(--soft);
+}
 
 /* ---- landing page ---- */
 
@@ -426,11 +435,26 @@ main{padding:24px 28px 60px}
 
 /* ---- freezer map ---- */
 
+.freezer-header-tools{display:flex;align-items:flex-end;gap:18px}
+.freezer-search-toggle{
+  width:32px;
+  height:32px;
+  padding:0;
+  border:1px solid var(--line);
+  border-radius:3px;
+  background:var(--raised);
+  color:var(--soft);
+  font:22px/1 var(--serif);
+  cursor:pointer;
+}
+.freezer-search-toggle:hover{border-color:var(--teal);color:var(--ink)}
+.freezer-search-toggle:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 .cell-tools{padding:12px 28px 0}
 .tool-link{font-family:var(--mono);font-size:11px;color:var(--teal);text-decoration:none}
 .tool-link:hover{text-decoration:underline}
 .freezer-layout{display:flex;align-items:flex-start;min-height:calc(100vh - 155px)}
 .freezer-sidebar{width:290px;flex:none;padding:18px;border-right:1px solid var(--line);position:sticky;top:0;max-height:calc(100vh - 60px);overflow-y:auto}
+.freezer-sidebar[hidden]{display:none}
 .freezer-sidebar input{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:3px;background:var(--raised);color:var(--ink);font:12px var(--mono);outline:none}
 .freezer-sidebar input:focus{border-color:var(--teal)}
 .freezer-hint{margin:10px 2px 14px;color:var(--soft);font-size:12px;line-height:1.45}
