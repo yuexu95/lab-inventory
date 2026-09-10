@@ -148,6 +148,16 @@ function openModal(rec) {
   }
   el.modal.appendChild(details);
 
+  if ((rec.locations || []).length) {
+    const link = document.createElement('div');
+    link.className = 'link';
+    const a = document.createElement('a');
+    a.href = 'freezer-map/#' + encodeURIComponent(rec.name);
+    a.textContent = 'Show on freezer map →';
+    link.appendChild(a);
+    el.modal.appendChild(link);
+  }
+
   el.overlay.classList.add('on');
   close.focus();
 }

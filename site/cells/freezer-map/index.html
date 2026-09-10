@@ -20,20 +20,28 @@
 <header>
   <div class="titles">
     <h1>Freezer map</h1>
-    <p>Find a cell line by name, or click a filled slot to see where it is stored.</p>
+    <p>Where each cell line sits in the freezer boxes. Search a name, pick a program, or click a filled slot to see everything about it.</p>
   </div>
-  <div class="freezer-header-tools">
-    <button class="freezer-search-toggle" id="searchToggle" type="button" aria-label="Show cell line search" title="Show cell line search" aria-expanded="false" aria-controls="freezerSidebar">
-      <span aria-hidden="true">⌕</span>
-    </button>
-    <div class="tally" id="tally"></div>
+  <div class="tally freezer-tally">
+    <div id="tally"></div>
+    <div class="freezer-meter" id="meter" aria-hidden="true"></div>
   </div>
 </header>
 
+<div class="toolbar freezer-bar">
+  <div class="freezer-search">
+    <input id="q" type="search" placeholder="search a cell line…" autocomplete="off" aria-label="Search a cell line">
+    <span class="freezer-matches mono" id="matches" aria-live="polite"></span>
+  </div>
+  <div class="chips freezer-legend" id="legend" aria-label="Highlight by program"></div>
+  <button class="chip freezer-list-toggle" id="listToggle" type="button" aria-expanded="false" aria-controls="freezerSidebar">All lines</button>
+</div>
+
+<div class="freezer-pick" id="pick" hidden></div>
+
 <div class="freezer-layout">
   <aside class="freezer-sidebar" id="freezerSidebar" hidden>
-    <input id="q" type="search" placeholder="Search a cell line" autocomplete="off">
-    <p class="freezer-hint">Click a name to highlight every slot it occupies.</p>
+    <p class="freezer-hint">Every line with a freezer slot, A to Z. Click one to highlight its slots.</p>
     <ul id="lineList"></ul>
   </aside>
   <main class="freezer-main" id="boxes">
