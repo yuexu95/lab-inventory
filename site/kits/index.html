@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kits · Lab Inventory</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav class="topnav">
+  <a class="brand" href="../">Lab Inventory</a>
+  <a href="../chemicals/">Building blocks</a>
+  <a href="../cells/">Cell lines</a>
+  <a href="../cells/freezer-map/">Freezer map</a>
+  <a class="here" href="./">Kits</a>
+  <a href="../antibody/">Antibody</a>
+  <a href="../dna-plasmids/">DNA plasmids</a>
+</nav>
+
+<header>
+  <div class="titles">
+    <h1>Kits</h1>
+    <p>In-house kits. Pick one for its materials — vendor catalog number, storage and stock — then the formulation and the preparation protocol.</p>
+  </div>
+  <div class="tally"><strong id="tally">—</strong>kits</div>
+</header>
+
+<div class="toolbar" id="kitBar" hidden>
+  <a class="kit-back" href="#">← All kits</a>
+  <input id="q" type="search" placeholder="search materials: name, CAS, catalog no.…" autocomplete="off">
+</div>
+
+<main>
+  <p class="status" id="status">Loading kits…</p>
+  <div class="sections" id="picker" hidden></div>
+  <article class="kit" id="kit" hidden></article>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

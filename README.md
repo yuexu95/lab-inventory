@@ -10,8 +10,9 @@ build.py                      fetch each section's sheet → build → write dis
 inventory/sources.py          Google Sheets / .xlsx readers, header matching
 inventory/chemicals.py        Building blocks: structures, functional groups
 inventory/cells.py            Cell lines: the ATCC list, minus pricing
+inventory/kits.py             Kits: materials, formulation, protocol per kit
 site/                         landing page and the shared stylesheet
-site/chemicals/, site/cells/  one page per section
+site/<slug>/                  one page per section
 .github/workflows/build.yml   rebuild on push, nightly, or on demand
 dist/                         build output (gitignored)
 ```
@@ -22,6 +23,7 @@ dist/                         build output (gitignored)
 | --- | --- | --- |
 | Building blocks | *Chemical Inventory* — id in `inventory/chemicals.py` | `/chemicals/` |
 | Cell lines | *Cell lines* — id in `inventory/cells.py` | `/cells/` |
+| Kits | *Kit* — id in `inventory/kits.py` | `/kits/` |
 
 Columns are found by their header, so column order in a sheet does not matter,
 and a title row above the header is fine. Every tab is read; a tab with no
@@ -43,11 +45,35 @@ coordinates and powers the [freezer map](site/cells/freezer-map/index.html).
 Rows without a cell line name (subtotals, spacers) are skipped. The ATCC link
 is built from the catalogue number. Price columns are ignored on purpose.
 
+**Kits** keeps each in-house kit as a run of tabs in the Kit sheet: a
+materials tab, then its formulation and protocol tabs. Each materials tab
+starts a new kit, named from its title row (`In-House Luciferase Assay Kit —
+Reagents & Materials List` → *In-House Luciferase Assay Kit*). To choose the
+name, or to keep a kit's tabs apart, prefix the tab titles:
+`Luc assay Kit · Materials List` (`|` or ` - ` also work). The Kits page
+opens on one button per kit; a button leads to that kit's details. A tab's
+role is read from its contents, not its name:
+
+- **materials** — a header with a name column (`Material Name`) and a
+  `Catalog No.` or `CAS No.` column; single-letter rows (`A`, `B` …) become
+  groups. `Package Size`, `Package Unit` and `Qty Purchased` are shown
+  together as the stock. Add a `Vendor` or `Stock` column and it shows up.
+- **formulation** — `Component` table headers that include `Final Conc.`,
+  under `①` `②` `③` section titles; label/value rows become a parameter grid.
+- **protocol** — a `Step` | `Procedure / Instructions` header; numbered rows
+  are steps.
+
+Tabs that match none (equipment lists, cost sheets) are skipped, and price,
+subtotal and PO-line columns are never carried over. Error values such as
+`#VALUE!` are dropped with a note in the build log — usually a CAS number
+the sheet turned into a date, fixed by formatting that column as plain text.
+Chinese headers (`材料名称`, `货号`, `组分`, `步骤` …) are recognised too.
+
 ## Build locally
 
 ```bash
 pip install -r requirements.txt
-python build.py --chemicals-xlsx Chemicals.xlsx --cells-xlsx "Cell lines.xlsx"
+python build.py --chemicals-xlsx Chemicals.xlsx --cells-xlsx "Cell lines.xlsx" --kits-xlsx Kit.xlsx
 python -m http.server -d dist 8000   # then open http://localhost:8000
 ```
 

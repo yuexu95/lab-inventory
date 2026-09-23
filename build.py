@@ -25,7 +25,7 @@ import shutil
 import sys
 from pathlib import Path
 
-from inventory import cells, chemicals
+from inventory import cells, chemicals, kits
 from inventory.sources import read_google, read_xlsx
 
 ROOT = Path(__file__).parent
@@ -35,7 +35,7 @@ DIST = ROOT / "dist"
 # Order here is the order on the landing page. Adding a section means adding a
 # module with SLUG, TITLE, UNIT, BLURB, SHEET_ID and build(), a matching
 # site/<slug>/ page, and a link in the nav of the other pages.
-SECTIONS = [chemicals, cells]
+SECTIONS = [chemicals, cells, kits]
 
 
 def main():
